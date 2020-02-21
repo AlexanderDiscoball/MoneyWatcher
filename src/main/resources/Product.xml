@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        " http://www.hibernate.org/dtd//hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="alex.disco.ball.entity.Product" table="products" catalog="moneywatcher">
+        <id name="id" type="java.lang.Integer">
+            <column name="PRODUCT_ID" />
+            <generator class="increment" />
+        </id>
+        <property name="name" type="string">
+            <column name="NAME" length="20" not-null="true" unique="false" />
+        </property>
+
+        <property name="category" column="CATEGORY">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">alex.disco.ball.entity.Category</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+        <property name="price" type="java.lang.Integer">
+            <column name="PRICE" not-null="true" unique="false" />
+        </property>
+        <property name="date" type="org.hibernate.type.LocalDateType">
+            <column name="DATE" length="20" not-null="true" unique="false" />
+        </property>
+    </class>
+</hibernate-mapping>
