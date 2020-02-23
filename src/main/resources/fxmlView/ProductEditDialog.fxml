@@ -55,9 +55,9 @@
                </font>
             </Label>
             <TextField fx:id="nameField" GridPane.columnIndex="1" />
-            <TextField fx:id="categoryField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TextField fx:id="priceField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField fx:id="dateField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <ChoiceBox fx:id="categoryChoiceBox" prefHeight="21.0" prefWidth="472.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <DatePicker fx:id="datePicker" prefHeight="11.0" prefWidth="507.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
       </GridPane>
       <Button layoutX="285.0" layoutY="331.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="33.0" prefWidth="106.0" text="OK" />

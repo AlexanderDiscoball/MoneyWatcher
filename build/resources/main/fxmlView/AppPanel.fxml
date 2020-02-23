@@ -11,7 +11,7 @@
    <children>
       <HBox layoutX="-2.0" layoutY="494.0" prefHeight="88.0" prefWidth="676.0">
          <children>
-            <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="365.0">
+            <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="88.0" prefWidth="260.0">
                <children>
                   <SplitPane dividerPositions="0.453781512605042" prefHeight="84.0" prefWidth="260.0">
                     <items>
@@ -35,27 +35,14 @@
                         </AnchorPane>
                     </items>
                   </SplitPane>
-                  <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="112.0" prefWidth="105.0">
-                    <items>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                           <children>
-                              <DatePicker prefHeight="41.0" prefWidth="103.0" />
-                           </children>
-                        </AnchorPane>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                           <children>
-                              <DatePicker prefHeight="48.0" prefWidth="103.0" />
-                           </children>
-                        </AnchorPane>
-                    </items>
-                  </SplitPane>
                </children>
             </HBox>
-            <HBox prefHeight="88.0" prefWidth="315.0">
+            <HBox prefHeight="88.0" prefWidth="460.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#handleChangePerson" prefHeight="102.0" prefWidth="104.0" text="Изменить" />
                   <Button mnemonicParsing="false" onAction="#handleDeletePerson" prefHeight="106.0" prefWidth="99.0" text="Удалить" />
+                  <Button mnemonicParsing="false" onAction="#handleChangePerson" prefHeight="102.0" prefWidth="104.0" text="Изменить" />
                   <Button mnemonicParsing="false" onAction="#handleAddPerson" prefHeight="88.0" prefWidth="112.0" text="Добавить" />
+                  <Button mnemonicParsing="false" onAction="#handleTimePeriod" prefHeight="100.0" prefWidth="114.0" text="Задать период" />
                </children>
             </HBox>
          </children>

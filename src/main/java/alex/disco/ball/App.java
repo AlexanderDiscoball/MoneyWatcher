@@ -2,8 +2,10 @@ package alex.disco.ball;
 
 import alex.disco.ball.controllers.AppPanelController;
 import alex.disco.ball.controllers.ProductEditDialogController;
+import alex.disco.ball.controllers.TimeChangerController;
 import alex.disco.ball.controllers.WrapperController;
 import alex.disco.ball.entity.Category;
+import alex.disco.ball.entity.HandleTimeContainer;
 import alex.disco.ball.entity.Product;
 import alex.disco.ball.util.HibernateUtil;
 import javafx.application.Application;
@@ -11,7 +13,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -19,19 +20,21 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class App extends Application {
 
-    private FXMLLoader loader;
     private Stage primaryStage;
     private BorderPane rootLayout;
     private ObservableList<Product> productData = FXCollections.observableArrayList();
+
+    private LocalDate currentStartDate = LocalDate.now();
+    private LocalDate currentEndDate = LocalDate.now();
+    private Category currentCategory = Category.ALL;
 
     public App(){
         HibernateUtil.buildSessionFactory();
@@ -45,10 +48,10 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
-        this.primaryStage.setTitle("ДеньгоСледитель");
+        this.primaryStage.setTitle("MoneyWatcher");
         this.primaryStage.setMinHeight(620);
         this.primaryStage.setMinWidth(690);
         this.primaryStage.getIcons().add(new Image("images/mainIcon.png"));
@@ -59,8 +62,8 @@ public class App extends Application {
 
     private void initWrapper(){
         try{
-            loader = new FXMLLoader();
-            URL url = new URL("file:/D:/job/MoneyWatcher/build/resources/main/fxmlView/Wrapper.fxml");
+            FXMLLoader loader = new FXMLLoader();
+            URL url = new URL(new File("").toURI().toURL().toString() + "/build/resources/main/fxmlView/Wrapper.fxml");
             loader.setLocation(url);
 
             rootLayout = loader.load();
@@ -82,7 +85,7 @@ public class App extends Application {
     private void initViewAppPanel(){
         try {
             FXMLLoader loader = new FXMLLoader();
-            URL url = new URL("file:/D:/job/MoneyWatcher/build/resources/main/fxmlView/AppPanel.fxml");
+            URL url = new URL(new File("").toURI().toURL().toString() + "build/resources/main/fxmlView/AppPanel.fxml");
             loader.setLocation(url);
 
             AnchorPane appPanel = loader.load();
@@ -110,14 +113,12 @@ public class App extends Application {
 
     public boolean showProductEditDialog(Product product) {
         try {
-            // Загружаем fxml-файл и создаём новую сцену
-            // для всплывающего диалогового окна.
+
             FXMLLoader loader = new FXMLLoader();
-            URL url = new URL("file:/D:/job/MoneyWatcher/build/resources/main/fxmlView/ProductEditDialog.fxml");
+            URL url = new URL(new File("").toURI().toURL() + "build/resources/main/fxmlView/ProductEditDialog.fxml");
             loader.setLocation(url);
             AnchorPane page = loader.load();
 
-            // Создаём диалоговое окно Stage.
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Edit Person");
             dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -126,18 +127,52 @@ public class App extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Передаём адресата в контроллер.
             ProductEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setProduct(product);
 
-            // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
             dialogStage.showAndWait();
 
             return controller.isOkClicked();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public HandleTimeContainer showTimeChangerDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            URL url = new URL(new File("").toURI().toURL() + "build/resources/main/fxmlView/TimeChangerDialog.fxml");
+            loader.setLocation(url);
+            AnchorPane page = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("�������� ������");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogStage.getIcons().add(new Image("images/addDialog.png"));
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            TimeChangerController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setCurrentStartDate(currentStartDate);
+            controller.setCurrentEndDate(currentEndDate);
+            controller.setCategoryChoiceBox(currentCategory);
+
+            dialogStage.showAndWait();
+
+            HandleTimeContainer container = controller.getContainer();
+
+            currentStartDate = container.getStartLocalDate();
+            currentEndDate = container.getEndLocalDate();
+            currentCategory = container.getSelectedCategory();
+
+            return container;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new HandleTimeContainer(LocalDate.now(),LocalDate.now(), Category.ALL,false);
         }
     }
 

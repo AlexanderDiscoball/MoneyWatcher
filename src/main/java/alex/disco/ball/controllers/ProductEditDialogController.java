@@ -3,8 +3,12 @@ package alex.disco.ball.controllers;
 import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.Product;
 import alex.disco.ball.util.DateUtil;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.time.LocalDate;
@@ -15,11 +19,11 @@ public class ProductEditDialogController {
     @FXML
     private TextField nameField;
     @FXML
-    private TextField categoryField;
+    private ChoiceBox<Category> categoryChoiceBox;
     @FXML
     private TextField priceField;
     @FXML
-    private TextField dateField;
+    private DatePicker datePicker;
 
     private Stage dialogStage;
     private Product product;
@@ -27,6 +31,7 @@ public class ProductEditDialogController {
 
     @FXML
     private void initialize() {
+        categoryChoiceBox.setItems(FXCollections.observableArrayList(Category.values()));
     }
 
     public void setDialogStage(Stage dialogStage) {
@@ -46,18 +51,18 @@ public class ProductEditDialogController {
         this.product = product;
 
         nameField.setText(product.getName());
-        categoryField.setText(product.getCategory().toString());
+        categoryChoiceBox.setValue(product.getCategory());
         priceField.setText(product.getPrice().toString());
-        dateField.setText(product.getDate().format(DateUtil.getDateFormatter()));
+        datePicker.setValue(product.getDate());
     }
 
     @FXML
     private void handleOk() {
         if (isInputValid()) {
             product.setName(nameField.getText());
-            product.setCategory(categoryField.getText().toUpperCase());
+            product.setCategory(categoryChoiceBox.getValue());
             product.setPrice(Integer.parseInt(priceField.getText()));
-            product.setDate(LocalDate.parse(dateField.getText(), DateTimeFormatter.ofPattern("dd.M.yyyy")));
+            product.setDate(datePicker.getValue());
 
             okClicked = true;
             dialogStage.close();
@@ -70,14 +75,9 @@ public class ProductEditDialogController {
         if (nameField.getText() == null || nameField.getText().length() == 0) {
             errorMessage += "Неккоректное имя\n";
         }
-        if (categoryField.getText() == null || categoryField.getText().length() == 0) {
+
+        if (categoryChoiceBox.getValue() == null) {
             errorMessage += "Не правильно написана категория\n";
-        }else {
-            try {
-                Category.valueOf(categoryField.getText().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                errorMessage += "Такой категории нет\n";
-            }
         }
 
         if (priceField.getText() == null || priceField.getText().length() == 0) {
@@ -86,16 +86,12 @@ public class ProductEditDialogController {
             try {
                 Integer.parseInt(priceField.getText());
             } catch (NumberFormatException e) {
-                errorMessage += "No valid price code (must be an integer)!\n";
+                errorMessage += "Не правильная цена (должно быть число)!\n";
             }
         }
 
-        if (dateField.getText() == null || dateField.getText().length() == 0) {
+        if (datePicker.getValue() == null) {
             errorMessage += "No valid birthday!\n";
-        } else {
-            if (!DateUtil.validDate(dateField.getText())) {
-                errorMessage += "Используейте формат записи dd.mm.yyyy!\n";
-            }
         }
 
         if (errorMessage.length() == 0) {

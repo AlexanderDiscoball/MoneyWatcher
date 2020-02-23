@@ -2,25 +2,27 @@ package alex.disco.ball.controllers;
 
 import alex.disco.ball.App;
 import alex.disco.ball.entity.Category;
+import alex.disco.ball.entity.HandleTimeContainer;
 import alex.disco.ball.entity.Product;
+import alex.disco.ball.util.DateUtil;
 import alex.disco.ball.util.HibernateUtil;
+import alex.disco.ball.util.QueryUtil;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class AppPanelController {
 
     private App app;
-
-    @FXML
-    private SplitPane allSplitPane;
 
     @FXML
     private TableView<Product> productTable;
@@ -83,8 +85,8 @@ public class AppPanelController {
                 sum.setText(sumInt.toString());
             } else {
                 alert.initOwner(app.getPrimaryStage());
-                alert.setTitle("РџСѓСЃС‚РѕР№ Р·Р°РїСЂРѕСЃ... Р§С‚Рѕ-С‚Рѕ СЃ Р‘Р”");
-                alert.setHeaderText("РЎСѓРїРµСЂ СЃС‚СЂР°С€РЅР°СЏ РѕС€РёР±РєР°");
+                alert.setTitle("Пустой запрос... Что-то с БД");
+                alert.setHeaderText("Супер страшная ошибка");
 
                 alert.showAndWait();
             }
@@ -93,8 +95,8 @@ public class AppPanelController {
 
             alert.initOwner(app.getPrimaryStage());
             alert.setTitle("No Selection");
-            alert.setHeaderText("РЎС‚СЂРѕРєР° РЅРµ РІС‹Р±СЂР°РЅР°");
-            alert.setContentText("Р’С‹Р±РµСЂРµС‚Рµ СЃС‚СЂРѕРєСѓ, РєРѕС‚РѕСЂСѓСЋ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ");
+            alert.setHeaderText("Строка не выбрана");
+            alert.setContentText("Выберете строку, которую хотите удалить");
 
             alert.showAndWait();
         }
@@ -102,7 +104,7 @@ public class AppPanelController {
 
     @FXML
     private void handleAddPerson() {
-        Product product = new Product("", Category.Р”Р РЈР“РћР•,0, LocalDateTime.now().toLocalDate());
+        Product product = new Product("", Category.ELSE,0, LocalDateTime.now().toLocalDate());
         boolean okClicked = app.showProductEditDialog(product);
         if (okClicked) {
 
@@ -146,17 +148,41 @@ public class AppPanelController {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.initOwner(app.getPrimaryStage());
             alert.setTitle("No Selection");
-            alert.setHeaderText("РќРµ РІС‹Р±СЂР°РЅ РїСЂРѕРґСѓРєС‚ РґР»СЏ РёР·РјРµРЅРµРЅРёРµ");
-            alert.setContentText("Р’С‹Р±РµСЂРµС‚Рё РїСЂРѕРґСѓРєС‚.");
+            alert.setHeaderText("Не выбран продукт для изменение");
+            alert.setContentText("Выберети продукт.");
 
             alert.showAndWait();
         }
     }
 
-    private void showProductDetails(Product newValue) {
-        if(newValue != null){
-            productTable.getItems().set(newValue.getId(),newValue);
+    @FXML
+    private void handleTimePeriod(){
+        HandleTimeContainer container = app.showTimeChangerDialog();
+        if(container.isOkClicked()){
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
+            Query query = session.createQuery(QueryUtil.getDatePicker(
+                    container.getStartLocalDate(),
+                    container.getEndLocalDate(),
+                    container.getSelectedCategory()));
+
+            if(query != null){
+                List<Product> list = (List<Product>)query.getResultList();
+                ObservableList<Product> oList = productTable.getItems();
+                oList.clear();
+                oList.addAll(list);
+                computeNewSum();
+            }
+            session.getTransaction().commit();
+            session.close();
         }
     }
 
+    private void computeNewSum(){
+        sumInt = 0;
+        for (Product product : productTable.getItems()) {
+            sumInt += product.getPrice();
+        }
+        sum.setText(sumInt.toString());
+    }
 }

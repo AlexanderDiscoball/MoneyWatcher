@@ -75,12 +75,14 @@ public class Product {
     public StringProperty nameProperty(){
         return new SimpleStringProperty(name);
     }
+
     public StringProperty categoryProperty(){
-        return new SimpleStringProperty(category.toString());
+        return new SimpleStringProperty(category.getTitle());
     }
     public StringProperty dateProperty(){
         return new SimpleStringProperty(date.toString());
     }
+
     public StringProperty priceProperty(){
         return new SimpleStringProperty(price.toString());
     }

@@ -1,15 +1,27 @@
 package alex.disco.ball;
 
+import alex.disco.ball.entity.Category;
+import alex.disco.ball.entity.Product;
+import alex.disco.ball.util.DateUtil;
+import alex.disco.ball.util.HibernateUtil;
+import javafx.fxml.FXMLLoader;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Test {
     public static void main(String[] args) {
-        Calendar c =  new GregorianCalendar();
-        c.set(2020, Calendar.DECEMBER, 30);
-        Date date = c.getTime();
-        System.out.println(date);
-        System.out.println(new Date(date.toString()));
+        System.out.println(Category.ALL.toString());
+        System.out.println(Arrays.asList(Category.values()));
     }
 }

@@ -17,17 +17,11 @@ public class AddData {
         HibernateUtil.buildSessionFactory();
         Session session = HibernateUtil.getSessionFactory().openSession();
 
-        Calendar c =  new GregorianCalendar();
-        c.set(2020, Calendar.DECEMBER, 30);
-        Date date = c.getTime();
 
         session.beginTransaction();
-        session.save(new Product("–õ–∞–ø—à–∞", Category.–ï–î–ê,140, LocalDateTime.now().toLocalDate()));
+        session.save(new Product("À‡Ô¯‡", Category.FOOD,140, LocalDateTime.now().toLocalDate()));
 
-        c.set(2020,Calendar.NOVEMBER,12);
-        date = c.getTime();
-
-        session.save(new Product("–û–±—É–≤—å", Category.–ï–î–ê,5000, LocalDateTime.now().toLocalDate()));
+        session.save(new Product("Œ·Û‚¸", Category.FOOD,5000, LocalDateTime.now().toLocalDate()));
 
         session.getTransaction().commit();
         session.close();

@@ -10,13 +10,21 @@ public class DateUtil {
 
 
     private static final String DATE_PATTERN = "dd.MM.yyyy";
+    private static final String DATE_PATTERN_FOR_SQL = "yyyy-MM-dd";
 
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern(DATE_PATTERN);
 
+    private static final DateTimeFormatter DATE_FORMATTER_FOR_SQL =
+            DateTimeFormatter.ofPattern(DATE_PATTERN_FOR_SQL);
+
     public static DateTimeFormatter getDateFormatter() {
         return DATE_FORMATTER;
+    }
+
+    public static DateTimeFormatter getDateFormatterForSql() {
+        return DATE_FORMATTER_FOR_SQL;
     }
 
     public static String format(LocalDate date) {
