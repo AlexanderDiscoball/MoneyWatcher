@@ -15,5 +15,21 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.10.Final'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.21.0.1'
+    //compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.11'
+    compile group: 'org.json', name: 'json', version: '20190722'
+    compile group: 'com.google.zxing', name: 'core', version: '3.4.0'
+    compile group: 'com.google.zxing', name: 'javase', version: '3.4.0'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': 1,
+                'Main-Class': 'alex.disco.ball.App'
+    }
+    baseName = "MoneyWatcher"
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }

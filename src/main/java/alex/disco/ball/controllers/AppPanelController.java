@@ -1,24 +1,27 @@
 package alex.disco.ball.controllers;
 
 import alex.disco.ball.App;
+import alex.disco.ball.check.CheckParser;
+import alex.disco.ball.check.QRReader;
 import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.HandleTimeContainer;
 import alex.disco.ball.entity.Product;
 import alex.disco.ball.util.DateUtil;
 import alex.disco.ball.util.HibernateUtil;
 import alex.disco.ball.util.QueryUtil;
+import com.google.zxing.NotFoundException;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 public class AppPanelController {
 
@@ -84,21 +87,11 @@ public class AppPanelController {
                 sumInt -= product.getPrice();
                 sum.setText(sumInt.toString());
             } else {
-                alert.initOwner(app.getPrimaryStage());
-                alert.setTitle("Пустой запрос... Что-то с БД");
-                alert.setHeaderText("Супер страшная ошибка");
-
-                alert.showAndWait();
+                showErrorMassage("Ошибка удаления", "Ошибка удаления");
             }
         }
         else {
-
-            alert.initOwner(app.getPrimaryStage());
-            alert.setTitle("No Selection");
-            alert.setHeaderText("Строка не выбрана");
-            alert.setContentText("Выберете строку, которую хотите удалить");
-
-            alert.showAndWait();
+            showErrorMassage("Не выбран продукт","Выберете что хотите удалить");
         }
     }
 
@@ -145,13 +138,7 @@ public class AppPanelController {
             }
 
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.initOwner(app.getPrimaryStage());
-            alert.setTitle("No Selection");
-            alert.setHeaderText("Не выбран продукт для изменение");
-            alert.setContentText("Выберети продукт.");
-
-            alert.showAndWait();
+            showErrorMassage("Не выбран продукт","Выберете что хотите изменить");
         }
     }
 
@@ -178,6 +165,55 @@ public class AppPanelController {
         }
     }
 
+    @FXML
+    private void choseFile() {
+        final FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(app.getPrimaryStage());
+        if (file != null) {
+            String extension = getFileExtension(file.getName());
+            if(extension.equalsIgnoreCase("png") || extension.equalsIgnoreCase("jpg")) {
+                try {
+                    CheckParser cp = new CheckParser(QRReader.readQRCode(file.getAbsolutePath()), "+79160910800","655694");
+                    List<Product> productList = cp.parse();
+
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    session.beginTransaction();
+                    for (Product product : productList) {
+                        session.save(product);
+                    }
+                    session.getTransaction().commit();
+
+                    session.close();
+
+                    productTable.getItems().addAll(productList);
+                    computeNewSum();
+                } catch (IOException | NotFoundException | InterruptedException e) {
+                    showErrorMassage("Ошибка чтения файла","QR-код не смог быть прочитан, сделайте более четкое фото");
+
+                }
+            }
+            else {
+                showErrorMassage("Ошибка чтения файла","Неправильный формат файла");
+            }
+        }
+    }
+
+    private void showErrorMassage(String header, String massage) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initOwner(app.getPrimaryStage());
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(massage);
+
+        alert.showAndWait();
+    }
+
+    public String getFileExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1)).get();
+    }
+
     private void computeNewSum(){
         sumInt = 0;
         for (Product product : productTable.getItems()) {
@@ -185,4 +221,5 @@ public class AppPanelController {
         }
         sum.setText(sumInt.toString());
     }
+
 }

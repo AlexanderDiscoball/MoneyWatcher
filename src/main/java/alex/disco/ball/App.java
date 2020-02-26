@@ -22,9 +22,11 @@ import org.hibernate.Session;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 public class App extends Application {
 
@@ -63,7 +65,7 @@ public class App extends Application {
     private void initWrapper(){
         try{
             FXMLLoader loader = new FXMLLoader();
-            URL url = new URL(new File("").toURI().toURL().toString() + "/build/resources/main/fxmlView/Wrapper.fxml");
+            URL url = getClass().getClassLoader().getResource("fxmlView/Wrapper.fxml").toURI().toURL();
             loader.setLocation(url);
 
             rootLayout = loader.load();
@@ -77,7 +79,7 @@ public class App extends Application {
             primaryStage.show();
 
 
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
@@ -85,7 +87,7 @@ public class App extends Application {
     private void initViewAppPanel(){
         try {
             FXMLLoader loader = new FXMLLoader();
-            URL url = new URL(new File("").toURI().toURL().toString() + "build/resources/main/fxmlView/AppPanel.fxml");
+            URL url = getClass().getClassLoader().getResource("fxmlView/AppPanel.fxml").toURI().toURL();
             loader.setLocation(url);
 
             AnchorPane appPanel = loader.load();
@@ -94,7 +96,7 @@ public class App extends Application {
 
             AppPanelController controller = loader.getController();
             controller.setAppData(this);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
@@ -115,7 +117,7 @@ public class App extends Application {
         try {
 
             FXMLLoader loader = new FXMLLoader();
-            URL url = new URL(new File("").toURI().toURL() + "build/resources/main/fxmlView/ProductEditDialog.fxml");
+            URL url = getClass().getClassLoader().getResource("fxmlView/Wrapper.fxml").toURI().toURL();
             loader.setLocation(url);
             AnchorPane page = loader.load();
 
@@ -134,7 +136,7 @@ public class App extends Application {
             dialogStage.showAndWait();
 
             return controller.isOkClicked();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             return false;
         }
