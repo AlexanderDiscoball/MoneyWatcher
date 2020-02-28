@@ -3,6 +3,7 @@ package alex.disco.ball.check;
 import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.Check;
 import alex.disco.ball.entity.Product;
+import javafx.stage.Stage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,10 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static alex.disco.ball.controllers.AppPanelController.showErrorMassage;
 
 
 public class CheckParser {
@@ -23,11 +24,13 @@ public class CheckParser {
     private final Check check;
     private final String logName;
     private final String logPass;
+    private final Stage primaryStage;
 
-    public CheckParser(Check check, String logName, String logPass){
+    public CheckParser(Check check, String logName, String logPass, Stage primaryStage){
         this.check = check;
         this.logName = logName;
         this.logPass = logPass;
+        this.primaryStage = primaryStage;
     }
 
     public List<Product> parse() throws IOException, InterruptedException {
@@ -35,32 +38,54 @@ public class CheckParser {
         HttpResponse response = createRequest();
 
         if (response == null){
-            throw new RuntimeException("Неправильный запрос");
+            showErrorMassage(primaryStage, "Ошибка срвера", "Сервер не отдал никакого запроса");
+            return new ArrayList<>();
         }
         if ( response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 202) {
-            throw new RuntimeException("Невозможно обработать запрос "
-                    + response.getStatusLine().getStatusCode());
+            showErrorMassage(primaryStage, "Ошибка срвера", "Чек зарегестрирован, но данные не могут быть отданы "+ response.getStatusLine());
+            return new ArrayList<>();
         }
         String res = EntityUtils.toString(response.getEntity(), "UTF-8");
-        System.out.println("RESPONSE"+res);
+
         final JSONObject obj = new JSONObject(res);
         final JSONObject document =(JSONObject) obj.get("document");
         final JSONObject receipt =(JSONObject) document.get("receipt");
         final JSONArray productsJSON =(JSONArray) receipt.get("items");
+
         for (Object jObj : productsJSON) {
             JSONObject jsonObject = (JSONObject) jObj;
             int price = (int) Math.ceil(Double.valueOf((Integer)jsonObject.get("price"))/100);
             String name = jsonObject.getString("name");
-            products.add(new Product(name, Category.FOOD, price,check.getLocalDateTime().toLocalDate()));
+            //TODO Доавить сюда поиск макс id
+            products.add(new Product(null,name, Category.FOOD, price,check.getLocalDateTime().toLocalDate()));
         }
 
         return products;
     }
 
     private HttpResponse createRequest() throws IOException, InterruptedException {
-        HttpResponse response;
+        HttpResponse response = null;
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        if(isCheckValid(httpClient)) {
+            if(check.getCountRequests() == 0){
+                Thread.sleep(1000);
+                check.setCountRequests(check.getCountRequests() + 1);
+            }
 
+            HttpGet getRequest = new HttpGet("https://" + this.logName + ":" + this.logPass + "@proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/" + this.check.getFn() + "/tickets/" + this.check.getFp() + "?fiscalSign=" + this.check.getFd() + "&sendToEmail=no");
+            getRequest.addHeader("Device-Id", "curl");
+            getRequest.addHeader("Device-OS", "DEVICEOS");
+            getRequest.addHeader("accept", "application/json");
+
+            response = httpClient.execute(getRequest);
+        }
+        else {
+            showErrorMassage(primaryStage, "Проблемы с чеком", "Чек устарел или не зарегестрирован в базе налоговой");
+        }
+        return response;
+    }
+
+    private boolean isCheckValid(CloseableHttpClient httpClient) throws IOException {
         HttpGet get = new HttpGet("https://proverkacheka.nalog.ru:9999/v1/ofds/*/inns/*/fss/" +
                 check.getFn() +
                 "/operations/1/tickets/" +
@@ -73,26 +98,9 @@ public class CheckParser {
                 check.getSum());
         get.addHeader("Content-Type", "application/json");
         get.addHeader("charset", "UTF-8");
-        response = httpClient.execute(get);
-        if(response.getStatusLine().getStatusCode() == 204) {
-            System.out.println("Чек зарегестрирован в базе");
-            if(check.getCountRequests() == 0){
-                Thread.sleep(1000);
-            }
-            HttpGet getRequest = new HttpGet("https://" + this.logName + ":" + this.logPass + "@proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/fss/" + this.check.getFn() + "/tickets/" + this.check.getFp() + "?fiscalSign=" + this.check.getFd() + "&sendToEmail=no");
-            getRequest.addHeader("Device-Id", "curl");
-            getRequest.addHeader("Device-OS", "DEVICEOS");
-            getRequest.addHeader("accept", "application/json");
-            try {
-                response = httpClient.execute(getRequest);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            System.out.println("Ошибка ебать");
-        }
-        return response;
+
+        HttpResponse response = httpClient.execute(get);
+        return response.getStatusLine().getStatusCode() == 204;
     }
 
 }

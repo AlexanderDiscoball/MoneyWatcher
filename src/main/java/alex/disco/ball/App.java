@@ -1,13 +1,13 @@
 package alex.disco.ball;
 
-import alex.disco.ball.controllers.AppPanelController;
-import alex.disco.ball.controllers.ProductEditDialogController;
-import alex.disco.ball.controllers.TimeChangerController;
-import alex.disco.ball.controllers.WrapperController;
+import alex.disco.ball.controllers.*;
 import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.HandleTimeContainer;
+import alex.disco.ball.entity.IncomeContainer;
 import alex.disco.ball.entity.Product;
 import alex.disco.ball.util.HibernateUtil;
+import alex.disco.ball.util.JDBCUtil;
+import alex.disco.ball.util.QueryUtil;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,14 +19,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.hibernate.Session;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
+
 
 public class App extends Application {
 
@@ -38,16 +40,20 @@ public class App extends Application {
     private LocalDate currentEndDate = LocalDate.now();
     private Category currentCategory = Category.ALL;
 
-    public App(){
-        HibernateUtil.buildSessionFactory();
-        Session session = HibernateUtil.getSessionFactory().openSession();
 
-        session.beginTransaction();
-        List<Product> result = session.createQuery( "from Product" ).list();
-        session.getTransaction().commit();
-        session.close();
-        productData.addAll(result);
+    public static void main(String[] args) {
+        launch(args);
     }
+
+    public App() throws SQLException {
+
+        Connection connection = JDBCUtil.createConnection();
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery(QueryUtil.selectAll());
+
+        productData.addAll(JDBCUtil.convertToProducts(rs));
+    }
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -67,9 +73,7 @@ public class App extends Application {
             FXMLLoader loader = new FXMLLoader();
             URL url = getClass().getClassLoader().getResource("fxmlView/Wrapper.fxml").toURI().toURL();
             loader.setLocation(url);
-
             rootLayout = loader.load();
-
             WrapperController controller = loader.getController();
             controller.setMainApp(this);
 
@@ -77,7 +81,6 @@ public class App extends Application {
 
             primaryStage.setScene(scene);
             primaryStage.show();
-
 
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
@@ -89,9 +92,7 @@ public class App extends Application {
             FXMLLoader loader = new FXMLLoader();
             URL url = getClass().getClassLoader().getResource("fxmlView/AppPanel.fxml").toURI().toURL();
             loader.setLocation(url);
-
             AnchorPane appPanel = loader.load();
-
             rootLayout.setCenter(appPanel);
 
             AppPanelController controller = loader.getController();
@@ -101,23 +102,11 @@ public class App extends Application {
         }
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
-
-    public ObservableList<Product> getProductData() {
-        return productData;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     public boolean showProductEditDialog(Product product) {
         try {
 
             FXMLLoader loader = new FXMLLoader();
-            URL url = getClass().getClassLoader().getResource("fxmlView/Wrapper.fxml").toURI().toURL();
+            URL url = getClass().getClassLoader().getResource("fxmlView/ProductEditDialog.fxml").toURI().toURL();
             loader.setLocation(url);
             AnchorPane page = loader.load();
 
@@ -145,7 +134,7 @@ public class App extends Application {
     public HandleTimeContainer showTimeChangerDialog() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            URL url = new URL(new File("").toURI().toURL() + "build/resources/main/fxmlView/TimeChangerDialog.fxml");
+            URL url = getClass().getClassLoader().getResource("fxmlView/TimeChangerDialog.fxml").toURI().toURL();
             loader.setLocation(url);
             AnchorPane page = loader.load();
 
@@ -172,10 +161,47 @@ public class App extends Application {
             currentCategory = container.getSelectedCategory();
 
             return container;
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             return new HandleTimeContainer(LocalDate.now(),LocalDate.now(), Category.ALL,false);
         }
+    }
+
+    public IncomeContainer showIncomeSetterDialog(){
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            URL url = getClass().getClassLoader().getResource("fxmlView/IncomeSetterDialog.fxml").toURI().toURL();
+            loader.setLocation(url);
+
+            AnchorPane page = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Доход");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogStage.getIcons().add(new Image("images/addDialog.png"));
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            IncomeSetterDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+
+            IncomeContainer container = controller.getContainer();
+
+            return  container;
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            return new IncomeContainer(LocalDate.now(), 0,false);
+        }
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public ObservableList<Product> getProductData() {
+        return productData;
     }
 
 }

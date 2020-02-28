@@ -2,20 +2,13 @@ package alex.disco.ball.controllers;
 
 import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.Product;
-import alex.disco.ball.util.DateUtil;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 
 public class ProductEditDialogController {

@@ -1,15 +1,9 @@
 package alex.disco.ball.entity;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import alex.disco.ball.util.DateUtil;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.time.LocalDate;
-import java.util.Date;
 
 public class Product {
 
@@ -21,7 +15,8 @@ public class Product {
 
     private Product(){}
 
-    public Product(String name, Category category, Integer price, LocalDate date) {
+    public Product(Integer id, String name, Category category, Integer price, LocalDate date) {
+        this.id = id;
         this.name = name;
         this.category = category;
         this.price = price;
@@ -80,7 +75,7 @@ public class Product {
         return new SimpleStringProperty(category.getTitle());
     }
     public StringProperty dateProperty(){
-        return new SimpleStringProperty(date.toString());
+        return new SimpleStringProperty(date.format(DateUtil.getDateFormatter()));
     }
 
     public StringProperty priceProperty(){
