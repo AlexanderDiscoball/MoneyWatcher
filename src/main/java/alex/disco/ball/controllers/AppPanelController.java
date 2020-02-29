@@ -1,24 +1,29 @@
 package alex.disco.ball.controllers;
 
 import alex.disco.ball.App;
+import alex.disco.ball.check.CheckParser;
+import alex.disco.ball.check.QRReader;
 import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.HandleTimeContainer;
+import alex.disco.ball.entity.IncomeContainer;
 import alex.disco.ball.entity.Product;
-import alex.disco.ball.util.DateUtil;
-import alex.disco.ball.util.HibernateUtil;
+import alex.disco.ball.util.JDBCUtil;
 import alex.disco.ball.util.QueryUtil;
+import com.google.zxing.NotFoundException;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 public class AppPanelController {
 
@@ -37,7 +42,15 @@ public class AppPanelController {
 
     @FXML
     private Label sum;
-    private Integer sumInt;
+    @FXML
+    private Label incomeLabel;
+    @FXML
+    private Label expenditureLabel;
+
+
+    private LocalDate incomeDate;
+    private Integer income;
+    private File fileIncome;
 
     @FXML
     private void initialize(){
@@ -46,143 +59,272 @@ public class AppPanelController {
         priceColumn.setCellValueFactory(cellData -> cellData.getValue().priceProperty());
         dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
+        setIncome();
+        incomeLabel.setText(income +" Доход за\n" + incomeDate);
+        expenditureLabel.setText(findExpend());
     }
 
+    private void setIncome() {
+        String fullInc = readIncomeDataFromTXT();
+        if(fullInc.length() != 0) {
+            String[] splitInc = fullInc.split("/");
+            income = Integer.parseInt(splitInc[0]);
+            incomeDate = LocalDate.parse(splitInc[1]);
+        }
+        else {
+            income = 0;
+            incomeDate = LocalDate.now();
+        }
+    }
+
+    private String readIncomeDataFromTXT() {
+        StringBuilder income = new StringBuilder();
+        fileIncome = new File("income.txt");
+        try(FileReader reader = new FileReader(fileIncome))
+        {
+            int c;
+            while((c=reader.read())!=-1){
+                income.append((char)c);
+            }
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
+        return income.toString();
+    }
+
+    private void writeIncomeDataToTXT(String incomFull){
+        try(FileWriter writer = new FileWriter(fileIncome, false)) {
+            writer.write(incomFull);
+            writer.flush();
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    private String findExpend() {
+        ArrayList<Product> list = new ArrayList<>();
+        try(Connection connection = JDBCUtil.createConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(QueryUtil.dateAfter(incomeDate));
+            list.addAll(JDBCUtil.convertToProducts(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        int sumInt = calculateSumProducts(list);
+        return Integer.toString(income - sumInt);
+    }
+
+    private String findExpend(LocalDate before) {
+        ArrayList<Product> list = new ArrayList<>();
+        try(Connection connection = JDBCUtil.createConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(QueryUtil.betweenDatesAndCategory(incomeDate, before, Category.ALL));
+            list.addAll(JDBCUtil.convertToProducts(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        int sumInt = calculateSumProducts(list);
+        return Integer.toString(income - sumInt);
+    }
 
     public void setAppData(App app){
         this.app = app;
 
         productTable.setItems(app.getProductData());
-        calculateSumProducts(app.getProductData());
+        int sumInt = calculateSumProducts(app.getProductData());
+        sum.setText(Integer.toString(sumInt));
     }
 
-    private void calculateSumProducts(ObservableList<Product> productData) {
-        sumInt = 0;
+    private int calculateSumProducts(List<Product> productData) {
+        int sumInt = 0;
         if(productData != null && !productData.isEmpty()){
             for (Product product : productData) {
                 sumInt += product.getPrice();
             }
         }
-        sum.setText(sumInt.toString());
+        return sumInt;
     }
 
     @FXML
-    private void handleDeletePerson() {
+    private void handleDeleteProduct() {
         int selectedIndex = productTable.getSelectionModel().getSelectedIndex();
-        Alert alert = new Alert(Alert.AlertType.WARNING);
         if(selectedIndex >= 0) {
             Product product = productTable.getSelectionModel().getSelectedItem();
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            Query query = session.createQuery("from Product where product_id = " + product.getId());
-            if (query != null) {
-                session.beginTransaction();
-                Product middle = (Product) query.getSingleResult();
-                session.delete(middle);
-                session.getTransaction().commit();
-                session.close();
+
+            try(Connection connection = JDBCUtil.createConnection()) {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(QueryUtil.deleteProduct(product));
                 productTable.getItems().remove(selectedIndex);
+                Integer sumInt = Integer.parseInt(sum.getText());
                 sumInt -= product.getPrice();
                 sum.setText(sumInt.toString());
-            } else {
-                alert.initOwner(app.getPrimaryStage());
-                alert.setTitle("Пустой запрос... Что-то с БД");
-                alert.setHeaderText("Супер страшная ошибка");
-
-                alert.showAndWait();
+                if(product.getDate().isAfter(incomeDate.minusDays(1))){
+                    expenditureLabel.setText(String.valueOf(Integer.parseInt(expenditureLabel.getText()) + product.getPrice()));
+                }
+            } catch (SQLException e) {
+                showErrorMassage(app.getPrimaryStage(),"Ошибка удаления", "Ошибка удаления");
             }
         }
         else {
-
-            alert.initOwner(app.getPrimaryStage());
-            alert.setTitle("No Selection");
-            alert.setHeaderText("Строка не выбрана");
-            alert.setContentText("Выберете строку, которую хотите удалить");
-
-            alert.showAndWait();
+            showErrorMassage(app.getPrimaryStage(), "Не выбран продукт", "Выберете что хотите удалить");
         }
     }
 
     @FXML
-    private void handleAddPerson() {
-        Product product = new Product("", Category.ELSE,0, LocalDateTime.now().toLocalDate());
+    private void handleAddProduct() {
+        Product product = new Product(0,"", Category.ELSE,0, LocalDateTime.now().toLocalDate());
         boolean okClicked = app.showProductEditDialog(product);
         if (okClicked) {
+            try(Connection connection = JDBCUtil.createConnection()) {
 
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            session.save(product);
-            session.getTransaction().commit();
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(QueryUtil.insertSingleProduct(product));
 
-            session.close();
-            app.getProductData().add(product);
-            sumInt += product.getPrice();
-            sum.setText(sumInt.toString());
+                app.getProductData().add(product);
+                Integer sumInt = Integer.parseInt(sum.getText());
+                sumInt += product.getPrice();
+                sum.setText(sumInt.toString());
+                if(product.getDate().isAfter(incomeDate.minusDays(1))){
+                    expenditureLabel.setText(String.valueOf(Integer.parseInt(expenditureLabel.getText()) - product.getPrice()));
+                }
+            }
+            catch (SQLException e) {
+                showErrorMassage(app.getPrimaryStage(),"Ошибка добавления", "Ошибка добавления");
+            }
         }
     }
 
     @FXML
-    private void handleChangePerson() {
+    private void handleChangeProduct() {
         Product selectedProduct = productTable.getSelectionModel().getSelectedItem();
         if (selectedProduct != null) {
             int oldPrice = selectedProduct.getPrice();
+            LocalDate oldDate = selectedProduct.getDate();
             boolean okClicked = app.showProductEditDialog(selectedProduct);
             if (okClicked) {
-                Session session = HibernateUtil.getSessionFactory().openSession();
-                session.beginTransaction();
-                Query query = session.createQuery( "from Product where product_id = "+ selectedProduct.getId());
-                if(query != null){
-                    Product product = (Product) query.getSingleResult();
-                    product.setAll(selectedProduct);
-                    session.update(product);
-                    sumInt -= oldPrice - product.getPrice();
-                    sum.setText(sumInt.toString());
+                try(Connection connection = JDBCUtil.createConnection()) {
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate(QueryUtil.updateProduct(selectedProduct));
+
+                    int sumInt = Integer.parseInt(sum.getText());
+                    sumInt -= oldPrice - selectedProduct.getPrice();
+                    sum.setText(Integer.toString(sumInt));
                     productTable.refresh();
+
+
+                    if(selectedProduct.getDate().isAfter(incomeDate.minusDays(1)) && oldDate.isBefore(incomeDate)){
+                        expenditureLabel.setText(String.valueOf(Integer.parseInt(expenditureLabel.getText()) - selectedProduct.getPrice()));
+                    }
+                    else if(selectedProduct.getDate().isBefore(incomeDate) && oldDate.isAfter(incomeDate.minusDays(1))){
+                        expenditureLabel.setText(String.valueOf(Integer.parseInt(expenditureLabel.getText()) + selectedProduct.getPrice()));
+                    }
+                    else if(selectedProduct.getDate().isAfter(incomeDate.minusDays(1)) && oldPrice != selectedProduct.getPrice()){
+                        expenditureLabel.setText(String.valueOf(Integer.parseInt(expenditureLabel.getText()) + oldPrice - selectedProduct.getPrice()));
+                    }
+
+                } catch (NumberFormatException | SQLException e) {
+                    showErrorMassage(app.getPrimaryStage(), "Не выбран продукт", "Выберете что хотите изменить");
                 }
-                session.getTransaction().commit();
-                session.close();
-
-
             }
-
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.initOwner(app.getPrimaryStage());
-            alert.setTitle("No Selection");
-            alert.setHeaderText("Не выбран продукт для изменение");
-            alert.setContentText("Выберети продукт.");
-
-            alert.showAndWait();
         }
     }
 
     @FXML
     private void handleTimePeriod(){
         HandleTimeContainer container = app.showTimeChangerDialog();
+        List<Product> list = new ArrayList<>();
         if(container.isOkClicked()){
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            Query query = session.createQuery(QueryUtil.getDatePicker(
-                    container.getStartLocalDate(),
-                    container.getEndLocalDate(),
-                    container.getSelectedCategory()));
-
-            if(query != null){
-                List<Product> list = (List<Product>)query.getResultList();
+            try(Connection connection = JDBCUtil.createConnection()) {
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery(QueryUtil.betweenDatesAndCategory(container.getStartLocalDate(), container.getEndLocalDate(), container.getSelectedCategory()));
+                list.addAll(JDBCUtil.convertToProducts(rs));
                 ObservableList<Product> oList = productTable.getItems();
                 oList.clear();
                 oList.addAll(list);
-                computeNewSum();
+                int sumInt = computeNewSum();
+                sum.setText(Integer.toString(sumInt));
+
+                if(container.getEndLocalDate().isAfter(incomeDate)) {
+                    expenditureLabel.setText(findExpend(container.getEndLocalDate()));
+                }else {
+                    expenditureLabel.setText("0");
+                }
+            }catch (SQLException e) {
+                e.printStackTrace();
             }
-            session.getTransaction().commit();
-            session.close();
         }
     }
 
-    private void computeNewSum(){
-        sumInt = 0;
+    @FXML
+    private void hadleIncome(){
+        IncomeContainer container = app.showIncomeSetterDialog();
+        if(container.isOkClicked()){
+            incomeDate = container.getDate();
+            System.out.println(incomeDate);
+            income = container.getIncome();
+            incomeLabel.setText(income +" Доход за\n" + incomeDate);
+            writeIncomeDataToTXT(income + "/" + incomeDate);
+            expenditureLabel.setText(findExpend());
+        }
+    }
+
+
+    @FXML
+    private void choseFile() {
+        final FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(app.getPrimaryStage());
+        if (file != null) {
+            String extension = getFileExtension(file.getName());
+            if(extension.equalsIgnoreCase("png") || extension.equalsIgnoreCase("jpg")) {
+                try {
+                    CheckParser cp = new CheckParser(QRReader.readQRCode(file.getAbsolutePath()), "+79160910800","655694", app.getPrimaryStage());
+                    List<Product> productList = cp.parse();
+
+                    try(Connection connection = JDBCUtil.createConnection()) {
+                        Statement statement = connection.createStatement();
+                        System.out.println(QueryUtil.insertMultipleProducts(productList));
+                        statement.executeUpdate(QueryUtil.insertMultipleProducts(productList));
+
+                        productTable.getItems().addAll(productList);
+                        int sumInt = computeNewSum();
+                        sum.setText(Integer.toString(sumInt));
+
+                        expenditureLabel.setText(findExpend());
+                    }
+                } catch (IOException | NotFoundException | InterruptedException | SQLException e) {
+                    showErrorMassage(app.getPrimaryStage(),"Ошибка чтения файла","QR-код не смог быть прочитан, сделайте более четкое фото");
+                }
+            }
+            else {
+                showErrorMassage(app.getPrimaryStage(),"Ошибка чтения файла","Неправильный формат файла");
+            }
+        }
+    }
+
+    public static void showErrorMassage(Stage stage, String header, String massage) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initOwner(stage);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(massage);
+
+        alert.showAndWait();
+    }
+
+    public String getFileExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1)).get();
+    }
+
+    private int  computeNewSum(){
+        int sumInt = 0;
         for (Product product : productTable.getItems()) {
             sumInt += product.getPrice();
         }
-        sum.setText(sumInt.toString());
+        return sumInt;
     }
+
 }
