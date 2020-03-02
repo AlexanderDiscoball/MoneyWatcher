@@ -10,41 +10,16 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/AddData.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/App.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/Test.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/Test.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/check/CheckParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/check/CheckParser.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/controllers/AppPanelController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/controllers/AppPanelController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/controllers/ProductEditDialogController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/controllers/ProductEditDialogController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/entity/Product.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/entity/Product.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/HibernateUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/HibernateUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/QueryUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/QueryUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/MoneyWatcher-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/MoneyWatcher-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/fxmlView/AppPanel.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/fxmlView/AppPanel.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/fxmlView/Wrapper.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/fxmlView/Wrapper.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/hibernate.cfg.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/hibernate.cfg.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/moneywatcher.db" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/moneywatcher.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/mydb.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/products.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/moneywatcher.db" beforeDir="false" afterPath="$PROJECT_DIR$/moneywatcher.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mydb.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/AddData.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/Test.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/check/CheckParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/check/CheckParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/AppPanelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/AppPanelController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/ProductEditDialogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/ProductEditDialogController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/entity/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/util/HibernateUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/util/QueryUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/util/QueryUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/fxmlView/AppPanel.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxmlView/AppPanel.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/fxmlView/Wrapper.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxmlView/Wrapper.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/moneywatcher.db" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/moneywatcher.db" afterDir="false" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -127,7 +102,19 @@
       <recent name="D:\job\MoneyWatcher\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.MoneyWatcher [fatJar]">
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.App">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="alex.disco.ball.App" />
       <module name="MoneyWatcher.main" />
@@ -339,5 +326,16 @@
       <screen x="1600" y="0" width="1920" height="1040" />
     </state>
     <state x="2223" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1600.860/1600.0.1920.1040@1600.0.1920.1040" timestamp="1582607110962" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/alex/disco/ball/check/CheckParser.java</url>
+          <line>52</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

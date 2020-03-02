@@ -45,7 +45,10 @@ public class CheckParser {
             showErrorMassage(primaryStage, "Ошибка срвера", "Чек зарегестрирован, но данные не могут быть отданы "+ response.getStatusLine());
             return new ArrayList<>();
         }
+
         String res = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+        System.out.println(res);
 
         final JSONObject obj = new JSONObject(res);
         final JSONObject document =(JSONObject) obj.get("document");
@@ -54,10 +57,10 @@ public class CheckParser {
 
         for (Object jObj : productsJSON) {
             JSONObject jsonObject = (JSONObject) jObj;
-            int price = (int) Math.ceil(Double.valueOf((Integer)jsonObject.get("price"))/100);
+            int price = (int) Math.ceil(Double.valueOf((Integer)jsonObject.get("sum"))/100);
             String name = jsonObject.getString("name");
             //TODO Доавить сюда поиск макс id
-            products.add(new Product(null,name, Category.FOOD, price,check.getLocalDateTime().toLocalDate()));
+            products.add(new Product(null, name, Category.FOOD, price, check.getLocalDateTime().toLocalDate()));
         }
 
         return products;

@@ -294,6 +294,7 @@ public class AppPanelController {
                         expenditureLabel.setText(findExpend());
                     }
                 } catch (IOException | NotFoundException | InterruptedException | SQLException e) {
+                    e.printStackTrace();
                     showErrorMassage(app.getPrimaryStage(),"Ошибка чтения файла","QR-код не смог быть прочитан, сделайте более четкое фото");
                 }
             }

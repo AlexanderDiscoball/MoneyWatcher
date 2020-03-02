@@ -5,7 +5,6 @@ import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.HandleTimeContainer;
 import alex.disco.ball.entity.IncomeContainer;
 import alex.disco.ball.entity.Product;
-import alex.disco.ball.util.HibernateUtil;
 import alex.disco.ball.util.JDBCUtil;
 import alex.disco.ball.util.QueryUtil;
 import javafx.application.Application;
@@ -18,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.hibernate.Session;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -27,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class App extends Application {
