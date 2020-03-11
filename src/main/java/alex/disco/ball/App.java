@@ -20,10 +20,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 
 
@@ -45,8 +42,8 @@ public class App extends Application {
     public App() throws SQLException {
 
         Connection connection = JDBCUtil.createConnection();
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery(QueryUtil.selectAll());
+        PreparedStatement statement = connection.prepareStatement(QueryUtil.selectAll());
+        ResultSet rs = statement.executeQuery();
 
         productData.addAll(JDBCUtil.convertToProducts(rs));
     }

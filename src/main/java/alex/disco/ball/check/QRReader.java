@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class QRReader {
 
-    static Map<DecodeHintType, ErrorCorrectionLevel> map = new HashMap<>();
+    private static Map<DecodeHintType, ErrorCorrectionLevel> map = new HashMap<>();
 
     public static Check readQRCode(String filePath) throws IOException, NotFoundException {
         BinaryBitmap binaryBitmap = new BinaryBitmap(

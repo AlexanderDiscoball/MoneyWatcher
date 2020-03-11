@@ -1,1 +1,0 @@
-java -jar MoneyWatcher-1.0-SNAPSHOT.jar

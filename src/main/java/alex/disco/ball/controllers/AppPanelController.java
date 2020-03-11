@@ -7,6 +7,7 @@ import alex.disco.ball.entity.Category;
 import alex.disco.ball.entity.HandleTimeContainer;
 import alex.disco.ball.entity.IncomeContainer;
 import alex.disco.ball.entity.Product;
+import alex.disco.ball.util.DateUtil;
 import alex.disco.ball.util.JDBCUtil;
 import alex.disco.ball.util.QueryUtil;
 import com.google.zxing.NotFoundException;
@@ -17,10 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -103,31 +101,6 @@ public class AppPanelController {
         }
     }
 
-    private String findExpend() {
-        ArrayList<Product> list = new ArrayList<>();
-        try(Connection connection = JDBCUtil.createConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(QueryUtil.dateAfter(incomeDate));
-            list.addAll(JDBCUtil.convertToProducts(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        int sumInt = calculateSumProducts(list);
-        return Integer.toString(income - sumInt);
-    }
-
-    private String findExpend(LocalDate before) {
-        ArrayList<Product> list = new ArrayList<>();
-        try(Connection connection = JDBCUtil.createConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(QueryUtil.betweenDatesAndCategory(incomeDate, before, Category.ALL));
-            list.addAll(JDBCUtil.convertToProducts(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        int sumInt = calculateSumProducts(list);
-        return Integer.toString(income - sumInt);
-    }
 
     public void setAppData(App app){
         this.app = app;
@@ -154,8 +127,11 @@ public class AppPanelController {
             Product product = productTable.getSelectionModel().getSelectedItem();
 
             try(Connection connection = JDBCUtil.createConnection()) {
-                Statement statement = connection.createStatement();
-                statement.executeUpdate(QueryUtil.deleteProduct(product));
+
+                PreparedStatement statement = connection.prepareStatement(QueryUtil.deleteProduct());
+                statement.setInt(1,product.getId());
+                statement.executeUpdate();
+
                 productTable.getItems().remove(selectedIndex);
                 Integer sumInt = Integer.parseInt(sum.getText());
                 sumInt -= product.getPrice();
@@ -179,8 +155,13 @@ public class AppPanelController {
         if (okClicked) {
             try(Connection connection = JDBCUtil.createConnection()) {
 
-                Statement statement = connection.createStatement();
-                statement.executeUpdate(QueryUtil.insertSingleProduct(product));
+                PreparedStatement preparedStatement = connection.prepareStatement(QueryUtil.insertSingleProduct());
+                preparedStatement.setString(1,product.getName());
+                preparedStatement.setString(2,product.getCategory().getName());
+                preparedStatement.setInt(3,product.getPrice());
+                preparedStatement.setString(4, product.getDate().format(DateUtil.getDateFormatterForSql()));
+
+                preparedStatement.executeUpdate();
 
                 app.getProductData().add(product);
                 Integer sumInt = Integer.parseInt(sum.getText());
@@ -205,8 +186,16 @@ public class AppPanelController {
             boolean okClicked = app.showProductEditDialog(selectedProduct);
             if (okClicked) {
                 try(Connection connection = JDBCUtil.createConnection()) {
-                    Statement statement = connection.createStatement();
-                    statement.executeUpdate(QueryUtil.updateProduct(selectedProduct));
+
+                    PreparedStatement statement = connection.prepareStatement(QueryUtil.updateProduct());
+
+                    statement.setString(1, selectedProduct.getName());
+                    statement.setString(2, selectedProduct.getCategory().getName());
+                    statement.setInt(3, selectedProduct.getPrice());
+                    statement.setString(4, selectedProduct.getDate().format(DateUtil.getDateFormatterForSql()));
+                    statement.setInt(5, selectedProduct.getId());
+
+                    statement.executeUpdate();
 
                     int sumInt = Integer.parseInt(sum.getText());
                     sumInt -= oldPrice - selectedProduct.getPrice();
@@ -237,8 +226,17 @@ public class AppPanelController {
         List<Product> list = new ArrayList<>();
         if(container.isOkClicked()){
             try(Connection connection = JDBCUtil.createConnection()) {
-                Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery(QueryUtil.betweenDatesAndCategory(container.getStartLocalDate(), container.getEndLocalDate(), container.getSelectedCategory()));
+                PreparedStatement statement = connection.prepareStatement(QueryUtil.betweenDatesAndCategory(container.getSelectedCategory()));
+                if(container.getSelectedCategory() == Category.ALL){
+                    statement.setString(1, container.getStartLocalDate().format(DateUtil.getDateFormatterForSql()));
+                    statement.setString(2, container.getEndLocalDate().format(DateUtil.getDateFormatterForSql()));
+                }
+                else {
+                    statement.setString(1, container.getStartLocalDate().format(DateUtil.getDateFormatterForSql()));
+                    statement.setString(2, container.getEndLocalDate().format(DateUtil.getDateFormatterForSql()));
+                    statement.setString(3, container.getSelectedCategory().getName());
+                }
+                ResultSet rs = statement.executeQuery();
                 list.addAll(JDBCUtil.convertToProducts(rs));
                 ObservableList<Product> oList = productTable.getItems();
                 oList.clear();
@@ -283,13 +281,31 @@ public class AppPanelController {
                     List<Product> productList = cp.parse();
 
                     try(Connection connection = JDBCUtil.createConnection()) {
-                        Statement statement = connection.createStatement();
-                        System.out.println(QueryUtil.insertMultipleProducts(productList));
-                        statement.executeUpdate(QueryUtil.insertMultipleProducts(productList));
+
+                        PreparedStatement preparedStatement = connection.prepareStatement(QueryUtil.insertSingleProduct());
+
+                        int i = 0;
+                        for (Product product : productList) {
+                            preparedStatement.setString(1,product.getName());
+                            preparedStatement.setString(2,product.getCategory().getName());
+                            preparedStatement.setInt(3,product.getPrice());
+                            preparedStatement.setString(4, product.getDate().format(DateUtil.getDateFormatterForSql()));
+
+                            preparedStatement.addBatch();
+                            i++;
+                            if (i % 1000 == 0 || i == productList.size()) {
+                                preparedStatement.executeBatch(); // Execute every 1000 items.
+                            }
+                        }
+
+                        PreparedStatement statement = connection.prepareStatement(QueryUtil.maxIndex());
+                        ResultSet rs = statement.executeQuery();
+
+                        int lastIndex = Integer.parseInt(rs.getString(1)) - productList.size();
+                        setIds(productList, lastIndex);
 
                         productTable.getItems().addAll(productList);
-                        int sumInt = computeNewSum();
-                        sum.setText(Integer.toString(sumInt));
+                        sum.setText(Integer.toString(computeNewSum()));
 
                         expenditureLabel.setText(findExpend());
                     }
@@ -304,6 +320,12 @@ public class AppPanelController {
         }
     }
 
+    private void setIds(List<Product> products, int lastIndex) {
+        for (Product product : products) {
+            product.setId(lastIndex++);
+        }
+    }
+
     public static void showErrorMassage(Stage stage, String header, String massage) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.initOwner(stage);
@@ -314,7 +336,7 @@ public class AppPanelController {
         alert.showAndWait();
     }
 
-    public String getFileExtension(String filename) {
+    private String getFileExtension(String filename) {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1)).get();
@@ -326,6 +348,37 @@ public class AppPanelController {
             sumInt += product.getPrice();
         }
         return sumInt;
+    }
+
+    private String findExpend() {
+        ArrayList<Product> list = new ArrayList<>();
+        try(Connection connection = JDBCUtil.createConnection()) {
+            PreparedStatement statement = connection.prepareStatement(QueryUtil.dateAfter());
+            statement.setString(1,incomeDate.format(DateUtil.getDateFormatterForSql()));
+            ResultSet rs = statement.executeQuery();
+            list.addAll(JDBCUtil.convertToProducts(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        int sumInt = calculateSumProducts(list);
+        return Integer.toString(income - sumInt);
+    }
+
+    private String findExpend(LocalDate until) {
+        ArrayList<Product> list = new ArrayList<>();
+        try(Connection connection = JDBCUtil.createConnection()) {
+            PreparedStatement statement = connection.prepareStatement(QueryUtil.betweenDatesAndCategory(Category.ALL));
+
+            statement.setString(1, incomeDate.format(DateUtil.getDateFormatterForSql()));
+            statement.setString(2, until.format(DateUtil.getDateFormatterForSql()));
+
+            ResultSet rs = statement.executeQuery();
+            list.addAll(JDBCUtil.convertToProducts(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        int sumInt = calculateSumProducts(list);
+        return Integer.toString(income - sumInt);
     }
 
 }

@@ -26,6 +26,8 @@ public class CheckParser {
     private final String logPass;
     private final Stage primaryStage;
 
+    private static final int waitDuration = 10;
+
     public CheckParser(Check check, String logName, String logPass, Stage primaryStage){
         this.check = check;
         this.logName = logName;
@@ -41,6 +43,14 @@ public class CheckParser {
             showErrorMassage(primaryStage, "Ошибка срвера", "Сервер не отдал никакого запроса");
             return new ArrayList<>();
         }
+
+        for (int i = 0; i <= waitDuration; i++) {
+            if(response.getStatusLine().getStatusCode() == 202){
+                Thread.sleep(1000);
+                response = createRequest();
+            }
+        }
+
         if ( response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 202) {
             showErrorMassage(primaryStage, "Ошибка срвера", "Чек зарегестрирован, но данные не могут быть отданы "+ response.getStatusLine());
             return new ArrayList<>();
