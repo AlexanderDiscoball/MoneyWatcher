@@ -9,26 +9,20 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/App.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/Test.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/Test.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/check/CheckParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/check/CheckParser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/check/QRReader.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/check/QRReader.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/controllers/AppPanelController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/controllers/AppPanelController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/HibernateUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/entity/Category.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/entity/Category.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/QueryUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/alex/disco/ball/util/QueryUtil.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/libs/MoneyWatcher-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/MoneyWatcher-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/exe.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/income.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/moneyWatcher.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/moneywatcher.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/moneywatcher.db" beforeDir="false" afterPath="$PROJECT_DIR$/moneywatcher.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/check/CheckParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/check/CheckParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/check/QRReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/check/QRReader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/AppPanelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/AppPanelController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/WrapperController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/controllers/WrapperController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/entity/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/entity/Category.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/alex/disco/ball/util/QueryUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/alex/disco/ball/util/QueryUtil.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -126,7 +120,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.App">
+  <component name="RunManager" selected="Gradle.MoneyWatcher [fatJar]">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="alex.disco.ball.App" />
       <module name="MoneyWatcher.main" />
@@ -338,5 +332,16 @@
       <screen x="1600" y="0" width="1920" height="1040" />
     </state>
     <state x="2223" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1600.860/1600.0.1920.1040@1600.0.1920.1040" timestamp="1582607110962" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/alex/disco/ball/check/CheckParser.java</url>
+          <line>80</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

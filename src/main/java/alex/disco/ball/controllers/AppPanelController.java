@@ -131,6 +131,7 @@ public class AppPanelController {
                 PreparedStatement statement = connection.prepareStatement(QueryUtil.deleteProduct());
                 statement.setInt(1,product.getId());
                 statement.executeUpdate();
+                System.out.println(product.getId());
 
                 productTable.getItems().remove(selectedIndex);
                 Integer sumInt = Integer.parseInt(sum.getText());
@@ -162,6 +163,12 @@ public class AppPanelController {
                 preparedStatement.setString(4, product.getDate().format(DateUtil.getDateFormatterForSql()));
 
                 preparedStatement.executeUpdate();
+
+                PreparedStatement statement = connection.prepareStatement(QueryUtil.maxIndex());
+                ResultSet rs = statement.executeQuery();
+                int lastIndex = Integer.parseInt(rs.getString(1));
+
+                product.setId(lastIndex);
 
                 app.getProductData().add(product);
                 Integer sumInt = Integer.parseInt(sum.getText());
@@ -303,6 +310,8 @@ public class AppPanelController {
 
                         int lastIndex = Integer.parseInt(rs.getString(1)) - productList.size();
                         setIds(productList, lastIndex);
+
+                        System.out.println(productList);
 
                         productTable.getItems().addAll(productList);
                         sum.setText(Integer.toString(computeNewSum()));

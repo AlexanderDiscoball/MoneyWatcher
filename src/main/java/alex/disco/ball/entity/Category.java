@@ -4,8 +4,15 @@ public enum Category {
 
     ALL("Все категории"),
     TRANSPORT("Транспорт"),
-    FOOD("Еда"),
+    FOOD("Питание"),
     CLOTHES("Одежда"),
+    FUN("Развлечения"),
+    RENT("Оплата квартиры"),
+    DEBT("Займы"),
+    SPORT("Спорт"),
+    PERSONALCARE("Уход за собой"),
+    VACATION("Отпуск"),
+    SAVINGS("Сбережения"),
     ELSE("Другое");
 
     private String title;

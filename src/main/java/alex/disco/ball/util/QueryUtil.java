@@ -36,6 +36,6 @@ public class QueryUtil {
 
 
     public static String maxIndex() {
-        return "Select MAX(product_id) FROM products";
+        return "SELECT LAST_INSERT_ROWID()";
     }
 }
