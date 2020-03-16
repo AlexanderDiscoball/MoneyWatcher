@@ -2,22 +2,40 @@ package alex.disco.ball.util;
 
 import alex.disco.ball.entity.Category;
 
-import java.time.LocalDate;
 
 public class QueryUtil {
-    private final static String datePicker = "from Product where date BETWEEN '";
 
-    public static String getDatePicker(LocalDate start, LocalDate end, Category selectedCategory) {
+    public static String insertSingleProduct() {
+        return "INSERT INTO products(NAME, CATEGORY, PRICE, DATE) VALUES( ?, ?, ?, ? );";
+    }
+
+    public static String selectAll() {
+        return "Select * FROM products;";
+    }
+
+    public static String deleteProduct() {
+        return "DELETE FROM products WHERE product_id = ?;";
+    }
+
+    public static String updateProduct() {
+        return "UPDATE products SET name = ?, category = ?, price = ?, date = ? WHERE product_id = ?;";
+    }
+
+    public static String betweenDatesAndCategory(Category selectedCategory) {
         if(selectedCategory == Category.ALL) {
-            return datePicker +
-                    start.format(DateUtil.getDateFormatterForSql()) +
-                    "' AND '" +
-                    end.format(DateUtil.getDateFormatterForSql()) + "'";
+            return "Select * FROM products where date BETWEEN ? AND ?;";
         }
-        return datePicker +
-                start.format(DateUtil.getDateFormatterForSql()) +
-                "' AND '" +
-                end.format(DateUtil.getDateFormatterForSql()) + "'" +
-                " AND category = '" + selectedCategory.getName() + "'";
+        else {
+            return "Select * FROM products where date BETWEEN ? AND ? AND category = ?;";
+        }
+    }
+
+    public static String dateAfter() {
+        return "Select * from products where date >= ?;";
+    }
+
+
+    public static String maxIndex() {
+        return "Select MAX(product_id) FROM products";
     }
 }

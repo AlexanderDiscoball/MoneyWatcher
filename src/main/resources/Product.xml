@@ -3,7 +3,7 @@
         " http://www.hibernate.org/dtd//hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="alex.disco.ball.entity.Product" table="products" catalog="moneywatcher">
+    <class name="alex.disco.ball.entity.Product" table="products" catalog="moneywatcher.db">
         <id name="id" type="java.lang.Integer">
             <column name="PRODUCT_ID" />
             <generator class="increment" />

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="218.0" prefWidth="441.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="alex.disco.ball.controllers.IncomeSetterDialogController">
+   <children>
+      <GridPane alignment="CENTER" layoutX="56.0" layoutY="22.0" prefHeight="137.0" prefWidth="330.0" AnchorPane.bottomAnchor="59.0" AnchorPane.leftAnchor="56.0" AnchorPane.rightAnchor="55.0" AnchorPane.topAnchor="22.0">
+         <children>
+            <Label text="Сумма">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="25.0" prefWidth="127.0" text="Дата прихода" GridPane.rowIndex="1">
+               <font>
+                  <Font size="15.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <TextField fx:id="incomeField" prefHeight="25.0" prefWidth="375.0" GridPane.columnIndex="1" />
+            <DatePicker fx:id="datePicker" prefHeight="25.0" prefWidth="387.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         </children>
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="186.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="472.0" minWidth="10.0" prefWidth="267.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="140.0" minHeight="10.0" prefHeight="101.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="189.0" minHeight="10.0" prefHeight="189.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+      </GridPane>
+      <Button layoutX="261.0" layoutY="153.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="33.0" prefWidth="106.0" text="Cancel" />
+      <Button layoutX="79.0" layoutY="153.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="33.0" prefWidth="106.0" text="OK" />
+   </children>
+</AnchorPane>
