@@ -39,13 +39,17 @@ public class App extends Application {
         launch(args);
     }
 
-    public App() throws SQLException {
+    public App(){
 
-        Connection connection = JDBCUtil.createConnection();
-        PreparedStatement statement = connection.prepareStatement(QueryUtil.selectAll());
-        ResultSet rs = statement.executeQuery();
+        try(Connection connection = JDBCUtil.createConnection()) {
+            PreparedStatement statement = connection.prepareStatement(QueryUtil.selectAll());
+            ResultSet rs = statement.executeQuery();
+            productData.addAll(JDBCUtil.convertToProducts(rs));
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
 
-        productData.addAll(JDBCUtil.convertToProducts(rs));
     }
 
 
